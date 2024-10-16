@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { RRule, rrulestr } from "rrule";
 import "../styles/upcomingEvents.css";
 
@@ -6,6 +7,8 @@ import "../styles/upcomingEvents.css";
 function UpcomingEvents() {
   const [events, setEvents] = useState([]);
   const [viewMode, setViewMode] = useState("week"); // 'week' or 'month'
+  const navigate = useNavigate();
+  const { eventId } = useParams();
 
   // useCallback hook ensures fetchEvents function is memoized and stable
   const fetchEvents = useCallback(async () => {
@@ -97,30 +100,85 @@ function UpcomingEvents() {
 
   // Format the recurrence rule for display
   const formatRecurrenceRule = (rule) => {
-    const rrule = RRule.fromString(rule);
-    const freq = RRule.FREQUENCIES[rrule.options.freq];
-    const interval = rrule.options.interval;
-    const days = rrule.options.byweekday
-      ? rrule.options.byweekday.map((day) => RRule.DAYS[day.weekday])
-      : null;
-    let formattedRule = "";
-    switch (freq) {
-      case "DAILY":
-        formattedRule = `Every ${interval} day(s)`;
-        break;
-      case "WEEKLY":
-        formattedRule = `Every ${interval} week(s) on ${days.join(", ")}`;
-        break;
-      case "MONTHLY":
-        formattedRule = `Every ${interval} month(s)`;
-        break;
-      case "YEARLY":
-        formattedRule = `Every ${interval} year(s)`;
-        break;
-      default:
-        formattedRule = rule;
+    try {
+      const rrule = RRule.fromString(rule);
+      const freq = RRule.FREQUENCIES[rrule.options.freq];
+      const interval = rrule.options.interval;
+      const days = rrule.options.byweekday
+        ? rrule.options.byweekday.map((day) => RRule.DAYS[day.weekday])
+        : [];
+
+      const dayNames = {
+        MO: "Mondays",
+        TU: "Tuesdays",
+        WE: "Wednesdays",
+        TH: "Thursdays",
+        FR: "Fridays",
+        SA: "Saturdays",
+        SU: "Sundays",
+      };
+
+      const dayList =
+        days.length > 0
+          ? days.map((day) => dayNames[day] || day).join(", ")
+          : "";
+
+      let formattedRule = "";
+      switch (freq) {
+        case "DAILY":
+          formattedRule = `Every ${interval} day(s)`;
+          break;
+        case "WEEKLY":
+          formattedRule = `Every ${interval} week(s)${
+            dayList ? ` on ${dayList}` : ""
+          }`;
+          break;
+        case "MONTHLY":
+          formattedRule = `Every ${interval} month(s)`;
+          break;
+        case "YEARLY":
+          formattedRule = `Every ${interval} year(s)`;
+          break;
+        default:
+          formattedRule = rule;
+      }
+      return formattedRule;
+    } catch (error) {
+      console.error("Error formatting recurrence rule:", rule, error);
+      return rule;
     }
-    return formattedRule;
+  };
+
+  // Handle edit button click
+  const handleEdit = (event) => {
+    // Navigate to EditEvent component with event data
+    navigate(`/editevent/${event.eventId}`);
+  };
+  // Handle edit button click
+  const handleDelete = async (eventId) => {
+    if (window.confirm("Are you sure you want to delete this event?")) {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          `http://localhost:5001/api/events/${eventId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.ok) {
+          alert("Event deleted successfully!");
+          fetchEvents(); // Refresh events after deletion
+        } else {
+          alert("Failed to delete event.");
+        }
+      } catch (error) {
+        console.error("Error deleting event:", error);
+        alert("Failed to delete event. Please try again.");
+      }
+    }
   };
 
   return (
@@ -160,6 +218,20 @@ function UpcomingEvents() {
                 {event.details && (
                   <div className="event-details">{event.details}</div>
                 )}
+                <div className="event-actions">
+                  <button
+                    onClick={() => handleEdit(event)}
+                    className="btn btn-secondary"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(event.eventId)}
+                    className="btn btn-secondary"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
           ))

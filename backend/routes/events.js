@@ -6,6 +6,7 @@ const auth = require("../middleware/auth");
 // Create Event
 router.post("/", auth, async (req, res) => {
   const { title, startDate, endDate, details, recurrenceRule } = req.body;
+  console.log("Event data received:", req.body); // Debug log
   try {
     const event = new Event({
       title,
@@ -18,6 +19,7 @@ router.post("/", auth, async (req, res) => {
     await event.save();
     res.status(201).send(event);
   } catch (error) {
+    console.error("Error creating event:", error.message); // Debug log
     res.status(400).send({ error: error.message });
   }
 });
@@ -30,6 +32,36 @@ router.get("/", auth, async (req, res) => {
     res.send(events);
   } catch (error) {
     res.status(400).send({ error: error.message });
+  }
+});
+
+// Get event by ID
+router.get("/:eventId", auth, async (req, res) => {
+  try {
+    const event = await Event.findOne({ eventId: req.params.eventId });
+    if (!event) {
+      return res.status(404).send("Event not found");
+    }
+    res.send(event);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+// Update event
+router.put("/:eventId", auth, async (req, res) => {
+  try {
+    const event = await Event.findOneAndUpdate(
+      { eventId: req.params.eventId },
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!event) {
+      return res.status(404).send("Event not found");
+    }
+    res.send(event);
+  } catch (error) {
+    res.status(500).send(error.message);
   }
 });
 

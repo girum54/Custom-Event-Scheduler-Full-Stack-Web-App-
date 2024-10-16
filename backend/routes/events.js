@@ -65,4 +65,17 @@ router.put("/:eventId", auth, async (req, res) => {
   }
 });
 
+// Delete event
+router.delete("/:eventId", auth, async (req, res) => {
+  try {
+    const event = await Event.findOneAndDelete({ eventId: req.params.eventId });
+    if (!event) {
+      return res.status(404).send("Event not found");
+    }
+    res.send({ message: "Event deleted successfully" });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
 module.exports = router;

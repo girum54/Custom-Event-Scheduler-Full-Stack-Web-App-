@@ -2,12 +2,12 @@ import React, { useEffect, useState, useCallback } from "react";
 import { RRule, rrulestr } from "rrule";
 import "../styles/upcomingEvents.css";
 
-// UpcomingEvents component
+// UpcomingEventsList component
 function UpcomingEvents() {
   const [events, setEvents] = useState([]);
   const [viewMode, setViewMode] = useState("week"); // 'week' or 'month'
 
-  // Fetch events when component mounts
+  // useCallback hook ensures fetchEvents function is memoized and stable
   const fetchEvents = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
@@ -16,7 +16,7 @@ function UpcomingEvents() {
         return;
       }
 
-      console.log("Fetching events with token:", token);
+      console.log("Fetching events with token:", token); // Debug log
       const response = await fetch("http://localhost:5001/api/events", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -25,9 +25,9 @@ function UpcomingEvents() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Fetched data:", data);
+        console.log("Fetched data:", data); // Debug log
         const processedEvents = processEvents(data);
-        console.log("Processed events:", processedEvents);
+        console.log("Processed events:", processedEvents); // Debug log
         setEvents(processedEvents);
       } else {
         const errorText = await response.text();
@@ -36,14 +36,16 @@ function UpcomingEvents() {
     } catch (error) {
       console.error("Error fetching events:", error);
     }
-  }, []);
+  }, [viewMode]);
 
+  // Fetch events when component mounts
   useEffect(() => {
     fetchEvents();
-  }, [fetchEvents, viewMode]);
+  }, [fetchEvents]);
 
+  // Process events to handle recurrence rules and filter future events based on view mode
   const processEvents = (data) => {
-    console.log("Processing events");
+    console.log("Processing events"); // Debug log
     const now = new Date();
     const endPeriod =
       viewMode === "week"
@@ -58,6 +60,7 @@ function UpcomingEvents() {
             const occurrences = rule.between(now, endPeriod);
             return occurrences.map((date) => ({
               ...event,
+              uniqueKey: `${event._id}-${date.getTime()}`, // Generate unique key
               startDate: date.toISOString(),
               endDate: new Date(
                 new Date(date).getTime() +
@@ -74,15 +77,15 @@ function UpcomingEvents() {
         }
         return [event];
       })
-      .filter((event) => {
-        const eventDate = new Date(event.startDate);
-        console.log("Event date:", eventDate);
-        console.log("End period:", endPeriod);
-        return eventDate > now && eventDate <= endPeriod;
-      })
+      .filter(
+        (event) =>
+          new Date(event.startDate) > now &&
+          new Date(event.startDate) <= endPeriod
+      )
       .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
   };
 
+  // Format the recurrence rule for display
   const formatRecurrenceRule = (rule) => {
     const rrule = RRule.fromString(rule);
     const freq = RRule.FREQUENCIES[rrule.options.freq];
@@ -129,7 +132,7 @@ function UpcomingEvents() {
       </div>
       {events.length > 0 ? (
         events.map((event) => (
-          <div key={event._id} className="event-card">
+          <div key={event.uniqueKey} className="event-card">
             <h3>{event.title}</h3>
             <p>Start: {new Date(event.startDate).toLocaleString()}</p>
             <p>End: {new Date(event.endDate).toLocaleString()}</p>

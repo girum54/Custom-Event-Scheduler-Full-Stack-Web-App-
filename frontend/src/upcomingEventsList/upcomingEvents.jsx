@@ -15,14 +15,12 @@ function UpcomingEvents() {
         console.error("No token found");
         return;
       }
-
       console.log("Fetching events with token:", token); // Debug log
       const response = await fetch("http://localhost:5001/api/events", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
       if (response.ok) {
         const data = await response.json();
         console.log("Fetched data:", data); // Debug log
@@ -85,14 +83,26 @@ function UpcomingEvents() {
       .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
   };
 
+  // Format date
+  const formatDate = (dateString) => {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  // Format time
+  const formatTime = (timeString) => {
+    const options = { hour: "2-digit", minute: "2-digit" };
+    return new Date(timeString).toLocaleTimeString(undefined, options);
+  };
+
   // Format the recurrence rule for display
   const formatRecurrenceRule = (rule) => {
     const rrule = RRule.fromString(rule);
     const freq = RRule.FREQUENCIES[rrule.options.freq];
     const interval = rrule.options.interval;
-    const days =
-      rrule.options.byweekday &&
-      rrule.options.byweekday.map((day) => RRule.DAYS[day.weekday]);
+    const days = rrule.options.byweekday
+      ? rrule.options.byweekday.map((day) => RRule.DAYS[day.weekday])
+      : null;
     let formattedRule = "";
     switch (freq) {
       case "DAILY":
@@ -114,37 +124,51 @@ function UpcomingEvents() {
   };
 
   return (
-    <div className="container">
-      <h2>Upcoming Events</h2>
-      <div>
+    <div className="events-container">
+      <h1 className="events-title">Upcoming Events</h1>
+      <div className="view-toggle">
         <button
           onClick={() => setViewMode("week")}
-          className={`btn ${viewMode === "week" ? "active" : ""}`}
+          className={`toggle-btn ${viewMode === "week" ? "active" : ""}`}
         >
           This Week
         </button>
         <button
           onClick={() => setViewMode("month")}
-          className={`btn ${viewMode === "month" ? "active" : ""}`}
+          className={`toggle-btn ${viewMode === "month" ? "active" : ""}`}
         >
           This Month
         </button>
       </div>
-      {events.length > 0 ? (
-        events.map((event) => (
-          <div key={event.uniqueKey} className="event-card">
-            <h3>{event.title}</h3>
-            <p>Start: {new Date(event.startDate).toLocaleString()}</p>
-            <p>End: {new Date(event.endDate).toLocaleString()}</p>
-            {event.details && <p>Details: {event.details}</p>}
-            {event.recurrenceRule && (
-              <p>Recurrence: {formatRecurrenceRule(event.recurrenceRule)}</p>
-            )}
-          </div>
-        ))
-      ) : (
-        <p>No upcoming events found for the selected period.</p>
-      )}
+      <div className="events-grid">
+        {events.length > 0 ? (
+          events.map((event) => (
+            <div key={event.uniqueKey} className="event-item">
+              <div className="event-header">
+                <h2 className="event-title">{event.title}</h2>
+                <div className="event-date">{formatDate(event.startDate)}</div>
+              </div>
+              <div className="event-body">
+                <div className="event-time">
+                  {formatTime(event.startDate)} - {formatTime(event.endDate)}
+                </div>
+                {event.recurrenceRule && (
+                  <div className="event-recurrence">
+                    Recurs: {formatRecurrenceRule(event.recurrenceRule)}
+                  </div>
+                )}
+                {event.details && (
+                  <div className="event-details">{event.details}</div>
+                )}
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="no-events">
+            No upcoming events found for the selected period.
+          </p>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,21 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { rrulestr } from "rrule";
 import "../styles/addEvent.css";
 
 function EditEvent() {
-  const { eventId } = useParams(); // Correctly retrieve eventId
+  const { eventId } = useParams();
   console.log("eventId from URL:", eventId); // Debug log
 
   const [title, setTitle] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [details, setDetails] = useState("");
-  const [recurrenceType, setRecurrenceType] = useState("daily");
-  const [nthType, setNthType] = useState("daily");
-  const [recurrenceInterval, setRecurrenceInterval] = useState(1);
+  const [recurrenceType, setRecurrenceType] = useState("");
+  const [nthType, setNthType] = useState("");
+  const [recurrenceInterval, setRecurrenceInterval] = useState("");
   const [specificDays, setSpecificDays] = useState([]);
   const [relativeDate, setRelativeDate] = useState("");
   const [recurrenceRule, setRecurrenceRule] = useState("");
+
+  const formatDateTime = (dateTimeString) => {
+    const date = new Date(dateTimeString);
+    return date.toISOString().slice(0, 16);
+  };
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -32,10 +38,27 @@ function EditEvent() {
         if (response.ok) {
           const data = await response.json();
           setTitle(data.title);
-          setStartDate(data.startDate);
-          setEndDate(data.endDate);
+          setStartDate(formatDateTime(data.startDate));
+          setEndDate(formatDateTime(data.endDate));
           setDetails(data.details);
           setRecurrenceRule(data.recurrenceRule);
+
+          // Parse recurrence rule to set recurrenceType and other details
+          const rule = rrulestr(data.recurrenceRule);
+          setRecurrenceType(rule.origOptions.freq);
+          if (rule.origOptions.interval) {
+            setRecurrenceInterval(rule.origOptions.interval);
+          }
+          if (rule.origOptions.byweekday) {
+            setSpecificDays(
+              rule.origOptions.byweekday.map((day) =>
+                day.toString().substring(0, 2).toUpperCase()
+              )
+            );
+          }
+          if (rule.origOptions.bymonthday) {
+            setRelativeDate(rule.origOptions.bymonthday);
+          }
         } else {
           console.error("Error fetching event data");
         }
@@ -88,6 +111,7 @@ function EditEvent() {
       alert("Error updating event. Please try again.");
     }
   };
+
   const createRecurrenceRule = () => {
     let recurrenceRule = null;
     if (recurrenceType) {

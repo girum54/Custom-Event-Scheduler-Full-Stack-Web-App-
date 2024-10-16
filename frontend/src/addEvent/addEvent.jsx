@@ -1,17 +1,100 @@
 import React, { useState } from "react";
 import "../styles/addEvent.css";
 
-function AddEvent({ fetchEvents }) {
-  // Define state variables for event details
+// AddEvent component
+function AddEvent() {
+  // State variables for event details
   const [title, setTitle] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [details, setDetails] = useState(""); // New state for details
-  const [recurrenceType, setRecurrenceType] = useState("");
-  const [nthType, setNthType] = useState("");
-  const [recurrenceInterval, setRecurrenceInterval] = useState("");
+  const [details, setDetails] = useState("");
+  const [recurrenceType, setRecurrenceType] = useState("daily"); // Default to daily to ensure rule frequency is accepted by database.
+  const [nthType, setNthType] = useState("daily"); // Default to daily to ensure rule frequency is accepted by database.
+  const [recurrenceInterval, setRecurrenceInterval] = useState(1); // Default to 1 to ensure rule frequency is accepted by database.
   const [specificDays, setSpecificDays] = useState([]);
   const [relativeDate, setRelativeDate] = useState("");
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const recurrenceRule = createRecurrenceRule();
+    console.log("Recurrence Rule:", recurrenceRule);
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:5001/api/events", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title,
+          startDate,
+          endDate,
+          details,
+          recurrenceRule,
+        }),
+      });
+
+      if (response.ok) {
+        alert("Event added successfully!");
+        resetFormFields();
+      } else {
+        alert("Failed to add event. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error adding event:", error);
+      alert("Failed to add event. Please try again.");
+    }
+  };
+
+  // Create the recurrence rule based on user inputs
+  const createRecurrenceRule = () => {
+    let recurrenceRule = null;
+    if (recurrenceType) {
+      switch (recurrenceType) {
+        case "daily":
+          recurrenceRule = `RRULE:FREQ=DAILY`;
+          break;
+        case "weekly":
+          recurrenceRule = `RRULE:FREQ=WEEKLY;BYDAY=${specificDays.join(",")}`;
+          break;
+        case "monthly":
+          recurrenceRule = `RRULE:FREQ=MONTHLY;BYMONTHDAY=${recurrenceInterval}`;
+          break;
+        case "yearly":
+          recurrenceRule = `RRULE:FREQ=YEARLY`;
+          break;
+        case "nth":
+          recurrenceRule = `RRULE:FREQ=${nthType.toUpperCase()};INTERVAL=${recurrenceInterval}`;
+          break;
+        case "specificDays":
+          recurrenceRule = `RRULE:FREQ=WEEKLY;BYDAY=${specificDays.join(",")}`;
+          break;
+        case "relativeDate":
+          recurrenceRule = `RRULE:${relativeDate}`;
+          break;
+        default:
+          recurrenceRule = `RRULE:FREQ=DAILY`; // Default to daily if no type
+          break;
+      }
+    }
+    return recurrenceRule;
+  };
+
+  // Reset the form fields after submission
+  const resetFormFields = () => {
+    setTitle("");
+    setStartDate("");
+    setEndDate("");
+    setDetails("");
+    setRecurrenceType("daily");
+    setNthType("daily");
+    setRecurrenceInterval(1);
+    setSpecificDays([]);
+    setRelativeDate("");
+  };
 
   // Handle changes for specific days checkboxes
   const handleSpecificDaysChange = (e) => {
@@ -24,7 +107,7 @@ function AddEvent({ fetchEvents }) {
   return (
     <div className="form-container">
       <h2>Add New Event</h2>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="title" className="form-label">
             Event Title
@@ -65,8 +148,6 @@ function AddEvent({ fetchEvents }) {
           />
         </div>
         <div className="form-group">
-          {" "}
-          {/* New form group for details */}
           <label htmlFor="details" className="form-label">
             Event Details
           </label>
@@ -88,7 +169,6 @@ function AddEvent({ fetchEvents }) {
             value={recurrenceType}
             onChange={(e) => setRecurrenceType(e.target.value)}
           >
-            <option value="">None</option>
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
             <option value="monthly">Monthly</option>
@@ -192,7 +272,7 @@ function AddEvent({ fetchEvents }) {
             />
           </div>
         )}
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="btn-primary">
           Add Event
         </button>
       </form>

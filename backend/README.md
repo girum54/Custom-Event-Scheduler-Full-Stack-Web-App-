@@ -1,6 +1,5 @@
-# Project Title
+# Custom Event Scheduler Backend
 
-A web application that allows users to schedule events with complex recurrence patterns.
 API and Backend Setup
 
 ## Table of Contents
@@ -10,7 +9,6 @@ API and Backend Setup
 - API Endpoints
 - Configuration
 - Contributing
-- License
 
 ## Installation
 
@@ -27,7 +25,7 @@ API and Backend Setup
 Set up environment variables: Create a .env file in the root directory and add the necessary environment variables. For example:
 PORT=5001
 DATABASE_URL=mongodb://localhost:27017/event-scheduler
-JWT_SECRET=your_jwt_secret
+JWT_SECRET=the_secret
 
 ## Usage
 
@@ -45,7 +43,7 @@ The server will be running on http://localhost:5001.
   Request body:
   JSON
   {
-  "username": "example",
+  "username": "user123",
   "password": "password123"
   }
 
@@ -62,19 +60,21 @@ The server will be running on http://localhost:5001.
   "title": "Event Title",
   "startDate": "2024-10-20T10:00:00Z",
   "endDate": "2024-10-20T12:00:00Z",
+  "details": "Event details",
   "recurrenceRule": "RRULE:FREQ=WEEKLY;BYDAY=MO"
   "recurrenceType": "relative-date"
   }
 
 PUT http://localhost:5001/api/events/eventId
-Updates an existing event.
-Headers: Authorization: Bearer <token>
-Request body:
+-Updates an existing event.
+-Headers: Authorization: Bearer <token>
+-Request body:
 JSON
 {
 "title": "Updated Event Title",
 "startDate": "2024-10-21T10:00:00Z",
 "endDate": "2024-10-21T12:00:00Z",
+"details": "Event details",
 "recurrenceRule": "RRULE:FREQ=MONTHLY;BYDAY=1MO"
 "recurrenceType": "relative-date"
 }

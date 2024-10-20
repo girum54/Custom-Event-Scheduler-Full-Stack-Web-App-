@@ -1,5 +1,9 @@
+//RRULE also called Recurrence Rule is a standard way to define how events or other entries repeat over time.
+//Here it is imported to be used in the app
+
 import { RRule } from "rrule";
 
+//function to generate RRULE from form data entered
 export const generateRRule = (eventData) => {
   const {
     startDateTime,
@@ -14,7 +18,7 @@ export const generateRRule = (eventData) => {
   let options = {
     freq: RRule.DAILY,
   };
-
+  //bysetpos used to locate relative weeks
   const getBysetpos = (week) => {
     switch (week) {
       case "first":
@@ -34,6 +38,7 @@ export const generateRRule = (eventData) => {
     }
   };
 
+  //specific cases defined and specified for all required recurrences
   switch (recurrenceType) {
     case "single":
       return null;
@@ -103,10 +108,11 @@ export const generateRRule = (eventData) => {
       }
       break;
   }
-  console.log(new RRule(options).toString());
+  console.log(new RRule(options).toString()); //debug log
   return new RRule(options).toString();
 };
 
+//function used to set form data correctly based on RRULE
 export const parseRRule = (rruleString) => {
   if (!rruleString) return { recurrenceType: "single" };
 
@@ -215,6 +221,7 @@ export const parseRRule = (rruleString) => {
   return parsedData;
 };
 
+//function used to generate human readable description for easy understanding of recurrence patters, also based on RRULE
 export const generateHumanReadableDescription = (rruleString) => {
   if (!rruleString) return "Happens once on the specified date";
 
@@ -331,6 +338,7 @@ export const generateHumanReadableDescription = (rruleString) => {
   return description;
 };
 
+//functions used to convert ISO format dates into human readable format
 export const formatDate = (dateString) => {
   const options = { year: "numeric", month: "long", day: "numeric" };
   return new Date(dateString).toLocaleDateString(undefined, options);

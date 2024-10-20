@@ -13,6 +13,7 @@ function SearchEvents() {
   const navigate = useNavigate();
 
   const handleSearch = useCallback(
+    //function to handle search operation
     async (e) => {
       e.preventDefault();
       try {

@@ -1,12 +1,17 @@
+//importing required packages
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+
+//import shared component to use, for reusability and efficiency
 import {
   generateHumanReadableDescription,
   generateRRule,
   parseRRule,
 } from "../sharedComponents/recurrenceFormatters";
 
+//main function of event form component
 const EventForm = () => {
+  //defining variables and states to be used
   const [isEditMode, setIsEditMode] = useState(false);
   const [eventData, setEventData] = useState({
     title: "",
@@ -36,6 +41,7 @@ const EventForm = () => {
   const { eventId } = useParams();
   const navigate = useNavigate();
 
+  //code logic for automatic toggle between edit mode and create mode
   useEffect(() => {
     if (eventId) {
       setIsEditMode(true);
@@ -50,6 +56,8 @@ const EventForm = () => {
       setIsEditMode(false);
     }
   }, [eventId]);
+
+  //reset form when complete
   const resetFormState = () => {
     setEventData({
       title: "",
@@ -65,8 +73,11 @@ const EventForm = () => {
     });
     setDescription("");
   };
+
+  //fetch data from database for editing
   const fetchEventData = async (eventId) => {
     try {
+      //secret token used to authenticate user access to database
       const token = localStorage.getItem("token");
       const response = await fetch(
         `http://localhost:5001/api/events/${eventId}`,
@@ -91,6 +102,7 @@ const EventForm = () => {
           ...prevData,
           ...parsedData,
         }));
+        //description set by using shared component that sets human readable descriptions from RRULE
         setDescription(generateHumanReadableDescription(data.recurrenceRule));
       } else {
         console.error("Error fetching event data");
@@ -104,6 +116,7 @@ const EventForm = () => {
     return new Date(dateTimeString).toISOString().slice(0, 16);
   };
 
+  //form validation to make sure details are entered correctly
   const validateForm = () => {
     let newErrors = {};
 
@@ -203,6 +216,7 @@ const EventForm = () => {
     setDescription("");
   };
 
+  //recurrence type and recurrence detailed options are defined here
   const renderRecurrenceOptions = () => {
     switch (eventData.recurrenceType) {
       case "standard":
@@ -464,6 +478,7 @@ const EventForm = () => {
     }
   };
 
+  //function used to create event and upload to database on success
   const createEvent = async (eventDataToSubmit) => {
     try {
       const token = localStorage.getItem("token");
@@ -488,6 +503,7 @@ const EventForm = () => {
     }
   };
 
+  //function used to edit event details and upload to database on success
   const updateEvent = async (eventId) => {
     try {
       const rrule = generateRRule(eventData);

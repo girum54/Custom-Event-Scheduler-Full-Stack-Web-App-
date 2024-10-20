@@ -145,6 +145,7 @@ function ViewAllEvents() {
         if (response.ok) {
           alert("Event deleted successfully!");
           fetchEvents();
+          handleCloseModal();
         } else {
           alert("Failed to delete event.");
         }
@@ -154,39 +155,74 @@ function ViewAllEvents() {
       }
     }
   };
-
   return (
-    <div className="events-container">
+    <div className="calendar-container">
+      <h2 className="calendar-title">All Events</h2>
       {/* FullCalendar component to display events */}
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
+        headerToolbar={{
+          left: "prev,next today",
+          center: "title",
+          right: "dayGridMonth,timeGridWeek,timeGridDay",
+        }}
         events={events}
         eventClick={handleEventClick}
       />
       {/* Modal to display event details */}
-      {showModal && selectedEvent && (
-        <div className="modal">
+      {selectedEvent && (
+        <div className="modal-container">
           <div className="modal-content">
-            <h2>{selectedEvent.title}</h2>
-            <p>
-              {formatDate(selectedEvent.start)} -{" "}
-              {formatDate(selectedEvent.end)}
-            </p>
-            <p>
-              {formatTime(selectedEvent.start)} -{" "}
-              {formatTime(selectedEvent.end)}
-            </p>
-            {selectedEvent.recurrenceRule && (
+            <div className="modal-header">
+              <h3 className="modal-title">{selectedEvent.title}</h3>
+              <button className="modal-close-btn" onClick={handleCloseModal}>
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
               <p>
-                {generateHumanReadableDescription(selectedEvent.recurrenceRule)}
+                <strong>Start Date: </strong>
+                {formatDate(selectedEvent.startDate) +
+                  " " +
+                  formatTime(selectedEvent.startDate)}
               </p>
-            )}
-            <button onClick={() => handleEdit(selectedEvent)}>Edit</button>
-            <button onClick={() => handleDelete(selectedEvent.eventId)}>
-              Delete
-            </button>
-            <button onClick={handleCloseModal}>Close</button>
+              <p>
+                <strong>End Date: </strong>
+                {formatDate(selectedEvent.endDate) +
+                  " " +
+                  formatTime(selectedEvent.startDate)}
+              </p>
+              <p>
+                <strong>Details:</strong> {selectedEvent.details}
+              </p>
+              {selectedEvent.recurrenceRule && (
+                <p>
+                  <strong>
+                    {generateHumanReadableDescription(
+                      selectedEvent.recurrenceRule
+                    )}
+                  </strong>{" "}
+                </p>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button
+                className="btn-secondary modal-button"
+                onClick={() => handleEdit(selectedEvent)}
+              >
+                Edit
+              </button>
+              <button
+                className="btn-danger modal-button"
+                onClick={() => handleDelete(selectedEvent.eventId)}
+              >
+                Delete
+              </button>
+              <button className="modal-button" onClick={handleCloseModal}>
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

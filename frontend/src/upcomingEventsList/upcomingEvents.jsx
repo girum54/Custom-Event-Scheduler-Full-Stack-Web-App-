@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { rrulestr } from "rrule";
 import "../styles/upcomingEvents.css";
 import {
@@ -9,10 +9,12 @@ import {
 } from "../sharedComponents/recurrenceFormatters";
 
 function UpcomingEvents() {
+  //definig states to manage and store list of events and current view mode
   const [events, setEvents] = useState([]);
   const [viewMode, setViewMode] = useState("week");
   const navigate = useNavigate();
 
+  // Function to fetch all events from the API
   const fetchEvents = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
@@ -37,10 +39,12 @@ function UpcomingEvents() {
     }
   }, [viewMode]);
 
+  //function to fetch events whenever the mode changes or the component starts
   useEffect(() => {
     fetchEvents();
   }, [fetchEvents]);
 
+  //function to process events and handle recurrence rules
   const processEvents = (data) => {
     const now = new Date();
     const endPeriod =
@@ -48,39 +52,44 @@ function UpcomingEvents() {
         ? new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
         : new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-    return data
-      .flatMap((event) => {
-        if (event.recurrenceRule && event.recurrenceRule !== "null") {
-          try {
-            const rule = rrulestr(event.recurrenceRule);
-            const occurrences = rule.between(now, endPeriod);
-            return occurrences.map((date) => ({
-              ...event,
-              uniqueKey: `${event._id}-${date.getTime()}`,
-              startDate: date.toISOString(),
-              endDate: new Date(
-                new Date(date).getTime() +
-                  (new Date(event.endDate) - new Date(event.startDate))
-              ).toISOString(),
-            }));
-          } catch (error) {
-            console.error(
-              `Invalid recurrence rule: ${event.recurrenceRule}`,
-              error
-            );
-            return [event];
+    return (
+      data
+        .flatMap((event) => {
+          if (event.recurrenceRule && event.recurrenceRule !== "null") {
+            try {
+              const rule = rrulestr(event.recurrenceRule);
+              const occurrences = rule.between(now, endPeriod);
+              return occurrences.map((date) => ({
+                ...event,
+                uniqueKey: `${event._id}-${date.getTime()}`,
+                startDate: date.toISOString(),
+                endDate: new Date(
+                  new Date(date).getTime() +
+                    (new Date(event.endDate) - new Date(event.startDate))
+                ).toISOString(),
+              }));
+            } catch (error) {
+              console.error(
+                `Invalid recurrence rule: ${event.recurrenceRule}`,
+                error
+              );
+              return [event];
+            }
           }
-        }
-        return [event];
-      })
-      .filter(
-        (event) =>
-          new Date(event.startDate) > now &&
-          new Date(event.startDate) <= endPeriod
-      )
-      .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+          return [event];
+        })
+
+        //filter and store events based on their start and end dates
+        .filter(
+          (event) =>
+            new Date(event.startDate) > now &&
+            new Date(event.startDate) <= endPeriod
+        )
+        .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
+    );
   };
 
+  //functions to handle butons on the event cars,
   const handleEdit = (event) => {
     navigate(`/editevent/${event.eventId}`);
   };
@@ -115,6 +124,7 @@ function UpcomingEvents() {
     <div className="events-container">
       <h1 className="events-title">Upcoming Events</h1>
       <div className="view-toggle">
+        {/* Buttons to toggle between week and month view */}
         <button
           onClick={() => setViewMode("week")}
           className={`toggle-btn ${viewMode === "week" ? "active" : ""}`}
@@ -128,6 +138,7 @@ function UpcomingEvents() {
           This Month
         </button>
       </div>
+      {/* Grid to display the list of events */}
       <div className="events-grid">
         {events.length > 0 ? (
           events.map((event) => (

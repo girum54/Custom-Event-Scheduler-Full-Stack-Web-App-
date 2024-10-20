@@ -2,12 +2,17 @@ import { useState } from "react";
 import "../styles/userAuth.css";
 
 function UserAuth({ setIsLoggedIn }) {
+  //state to toggle between login and registration forms
   const [isLogin, setIsLogin] = useState(true);
+  //state to store the username input
   const [username, setUsername] = useState("");
+  //state to store the password input
   const [password, setPassword] = useState("");
 
+  //Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Determine the endpoint based on whether the user is logging in or registering
     const endpoint = isLogin
       ? "http://localhost:5001/api/users/login"
       : "http://localhost:5001/api/users/register";
@@ -20,18 +25,22 @@ function UserAuth({ setIsLoggedIn }) {
       });
       if (response.ok) {
         if (isLogin) {
+          // If login is successful, store the token and update the login state
           const data = await response.json();
           localStorage.setItem("token", data.token);
           setIsLoggedIn(true);
         } else {
+          // If registration is successful, prompt the user to log in
           alert("Registration successful. Please log in.");
           setIsLogin(true);
         }
       } else {
+        // Handle errors from the server
         const errorData = await response.json();
         alert(errorData.error);
       }
     } catch (error) {
+      // Handle network or other errors
       console.error("Authentication error:", error);
       alert("Authentication failed. Please try again.");
     }

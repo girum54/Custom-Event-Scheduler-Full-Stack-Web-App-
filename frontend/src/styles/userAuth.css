@@ -3,80 +3,91 @@
   max-width: 400px;
   margin: 2rem auto;
   padding: 2rem;
-  background-color: var(--tertiary-color);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  background-color: var(--card-bg);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-label {
   display: block;
   margin-bottom: 0.5rem;
-  font-weight: bold;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .form-control {
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.75rem;
   font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 2px solid var(--secondary-color);
+  border-radius: 8px;
   box-sizing: border-box;
+  transition: var(--transition);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(58, 12, 163, 0.2);
 }
 
 .btn-primary {
-  background-color: #0056b3;
-  border-color: #0056b3;
+  background-color: var(--primary-color);
+  border: none;
   color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition);
 }
 
 .btn-primary:hover {
-  background-color: #004494;
-  border-color: #004494;
+  background-color: var(--tertiary-color);
 }
 
 .toggle-message {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  color: var(--text-secondary);
 }
 
 .btn-link {
   background: none;
   border: none;
-  color: #0056b3;
+  color: var(--primary-color);
   cursor: pointer;
   text-decoration: underline;
   padding: 0;
   font: inherit;
+  font-weight: 600;
+  transition: var(--transition);
 }
 
 .btn-link:hover {
-  color: #004494;
+  color: var(--tertiary-color);
 }
 
-/* Mobile view adjustments */
 @media (max-width: 600px) {
   .form-container {
     width: 95%;
-    padding: 1rem;
+    padding: 1.5rem;
   }
 
   .form-label {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
   }
 
   .form-control {
-    font-size: 0.9rem;
-    padding: 0.4rem;
+    font-size: 0.95rem;
+    padding: 0.6rem;
   }
 
   .btn-primary {
-    padding: 0.5rem;
-    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.95rem;
   }
 }

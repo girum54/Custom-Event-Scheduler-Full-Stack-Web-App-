@@ -15,7 +15,7 @@ API and Backend Setup
 1. Clone the repository:
    ```bash
    git clone https://github.com/girum54/Custom-Event-Scheduler-Full-Stack-Web-App-.git
-   cd Custom-Event-Scheduler-Full-Stack-Web-App-/backend
+   cd Custom-Event-Scheduler-Full-Stack-Web-App-/frontend
    ```
 
 ## Install dependencies:
@@ -65,29 +65,31 @@ The server will be running on http://localhost:5001.
   "recurrenceType": "relative-date"
   }
 
-PUT http://localhost:5001/api/events/eventId
--Updates an existing event.
--Headers: Authorization: Bearer <token>
--Request body:
-JSON
-{
-"title": "Updated Event Title",
-"startDate": "2024-10-21T10:00:00Z",
-"endDate": "2024-10-21T12:00:00Z",
-"details": "Event details",
-"recurrenceRule": "RRULE:FREQ=MONTHLY;BYDAY=1MO"
-"recurrenceType": "relative-date"
-}
+  PUT http://localhost:5001/api/events/eventId
+  Updates an existing event.
+  Headers: Authorization: Bearer <token>
+  Request body:
+  JSON
+  {
+  "title": "Updated Event Title",
+  "startDate": "2024-10-21T10:00:00Z",
+  "endDate": "2024-10-21T12:00:00Z",
+  "details": "Event details",
+  "recurrenceRule": "RRULE:FREQ=MONTHLY;BYDAY=1MO"
+  "recurrenceType": "relative-date"
+  }
 
-DELETE http://localhost:5001/api/events/eventId
-Deletes an event.
-Headers: Authorization: Bearer <token>
+  DELETE http://localhost:5001/api/events/eventId
+  Deletes an event.
+  Headers: Authorization: Bearer <token>
 
 ## Configuration
 
-PORT: The port number on which the server will run.
-DATABASE_URL: The URL of the MongoDB database.
-JWT_SECRET: The secret key for signing JWT tokens.
+Make sure you define these details in the code, to suit your
+
+-PORT: The port number on which the server will run.
+-DATABASE_URL: The URL of the MongoDB database.
+-JWT_SECRET: The secret key for signing JWT tokens.
 
 ## Contributing
 

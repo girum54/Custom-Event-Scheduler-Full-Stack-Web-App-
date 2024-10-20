@@ -14,8 +14,8 @@ Frontend Setup
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-   cd YOUR_REPOSITORY
+   git clone https://github.com/girum54/Custom-Event-Scheduler-Full-Stack-Web-App-.git
+   cd Custom-Event-Scheduler-Full-Stack-Web-App-/backend
    ```
 
 ## Install dependencies:
@@ -50,12 +50,12 @@ Navbar
 Navigation bar with links to different sections of the application.
 
 Routes
-/addevent: Route to add a new event.
-/editevent/:eventId: Route to edit an existing event.
-/upcomingevents: Route to view upcoming events.
-/viewallevents: Route to view all events in a calendar.
-/searchevents: Route to search for events.
-/: Default route redirects to /upcomingevents.
+-/addevent: Route to add a new event.
+-/editevent/:eventId: Route to edit an existing event.
+-/upcomingevents: Route to view upcoming events.
+-/viewallevents: Route to view all events in a calendar.
+-/searchevents: Route to search for events.
+-/: Default route redirects to /upcomingevents.
 
 ## Fork the repository.
 

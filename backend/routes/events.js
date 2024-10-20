@@ -5,7 +5,8 @@ const auth = require("../middleware/auth");
 
 // Create Event
 router.post("/", auth, async (req, res) => {
-  const { title, startDate, endDate, details, recurrenceRule } = req.body;
+  const { title, startDate, endDate, details, recurrenceRule, recurrenceType } =
+    req.body;
   console.log("Event data received:", req.body); // Debug log
   try {
     const event = new Event({
@@ -14,6 +15,7 @@ router.post("/", auth, async (req, res) => {
       endDate,
       details,
       recurrenceRule,
+      recurrenceType, // Add this line
       user: req.user._id,
     });
     await event.save();
@@ -75,6 +77,28 @@ router.delete("/:eventId", auth, async (req, res) => {
     res.send({ message: "Event deleted successfully" });
   } catch (error) {
     res.status(500).send(error.message);
+  }
+});
+// Search events
+router.get("/search", auth, async (req, res) => {
+  const { searchTerm } = req.query;
+  console.log("Search term received:", searchTerm); // Debug log
+  try {
+    const events = await Event.find({ user: req.user._id });
+    const filteredEvents = events.filter(
+      (event) =>
+        event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (event.details &&
+          event.details.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (event.recurrenceRule &&
+          formatRecurrenceRule(event.recurrenceRule)
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()))
+    );
+    res.send(filteredEvents);
+  } catch (error) {
+    console.error("Error searching events:", error.message); // Debug log
+    res.status(400).send({ error: error.message });
   }
 });
 

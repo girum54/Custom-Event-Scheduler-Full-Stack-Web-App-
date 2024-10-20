@@ -129,3 +129,40 @@
 .fc-event:nth-of-type(5n + 5) .fc-event-main {
   background-color: #a55eea !important;
 }
+
+/* Media queries for mobile responsiveness */
+@media (max-width: 600px) {
+  .calendar-container {
+    padding: 1rem;
+  }
+
+  .calendar-title {
+    font-size: 1.5rem;
+  }
+
+  .modal-content {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  .modal-header {
+    padding: 1rem;
+  }
+
+  .modal-title {
+    font-size: 1.25rem;
+  }
+
+  .modal-body {
+    padding: 1rem;
+  }
+
+  .modal-footer {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .modal-button {
+    padding: 0.5rem 1rem;
+  }
+}

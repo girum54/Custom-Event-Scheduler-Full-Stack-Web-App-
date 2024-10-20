@@ -7,7 +7,7 @@
 .events-title {
   font-size: 3rem;
   font-weight: 700;
-  color: var(--primary-color);
+  color: black;
   text-align: center;
   margin-bottom: 2rem;
   letter-spacing: -1px;
@@ -102,12 +102,13 @@
 
 .event-body {
   padding: 1.5rem;
+  color: black;
 }
 
 .event-time,
 .event-recurrence {
   font-size: 0.9rem;
-  color: var(--text-secondary);
+  color: black;
   margin-bottom: 0.5rem;
 }
 

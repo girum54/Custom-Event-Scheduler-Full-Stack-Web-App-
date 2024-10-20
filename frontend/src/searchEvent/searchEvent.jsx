@@ -52,12 +52,12 @@ function SearchEvents() {
     navigate(`/editevent/${event.eventId}`);
   };
 
-  const handleDelete = async (eventId) => {
+  const handleDelete = async (event) => {
     if (window.confirm("Are you sure you want to delete this event?")) {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `http://localhost:5001/api/events/${eventId}`,
+          `http://localhost:5001/api/events/${event.eventId}`,
           {
             method: "DELETE",
             headers: {

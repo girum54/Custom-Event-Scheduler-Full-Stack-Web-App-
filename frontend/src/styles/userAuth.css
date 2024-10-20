@@ -1,0 +1,93 @@
+.form-container {
+  width: 90%;
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--card-bg);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 2px solid var(--secondary-color);
+  border-radius: 8px;
+  box-sizing: border-box;
+  transition: var(--transition);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(58, 12, 163, 0.2);
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.btn-primary:hover {
+  background-color: var(--tertiary-color);
+}
+
+.toggle-message {
+  margin-top: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.btn-link:hover {
+  color: var(--tertiary-color);
+}
+
+@media (max-width: 600px) {
+  .form-container {
+    width: 95%;
+    padding: 1.5rem;
+  }
+
+  .form-label {
+    font-size: 0.95rem;
+  }
+
+  .form-control {
+    font-size: 0.95rem;
+    padding: 0.6rem;
+  }
+
+  .btn-primary {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.95rem;
+  }
+}

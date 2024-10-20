@@ -1,16 +1,18 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { RRule, rrulestr } from "rrule";
+import { rrulestr } from "rrule";
 import "../styles/upcomingEvents.css";
+import {
+  generateHumanReadableDescription,
+  formatDate,
+  formatTime,
+} from "../sharedComponents/recurrenceFormatters";
 
-// UpcomingEventsList component
 function UpcomingEvents() {
   const [events, setEvents] = useState([]);
-  const [viewMode, setViewMode] = useState("week"); // 'week' or 'month'
+  const [viewMode, setViewMode] = useState("week");
   const navigate = useNavigate();
-  const { eventId } = useParams();
 
-  // useCallback hook ensures fetchEvents function is memoized and stable
   const fetchEvents = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
@@ -18,7 +20,6 @@ function UpcomingEvents() {
         console.error("No token found");
         return;
       }
-      console.log("Fetching events with token:", token); // Debug log
       const response = await fetch("http://localhost:5001/api/events", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -26,27 +27,21 @@ function UpcomingEvents() {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log("Fetched data:", data); // Debug log
         const processedEvents = processEvents(data);
-        console.log("Processed events:", processedEvents); // Debug log
         setEvents(processedEvents);
       } else {
-        const errorText = await response.text();
-        console.error("Error fetching events:", errorText);
+        console.error("Error fetching events:", await response.text());
       }
     } catch (error) {
       console.error("Error fetching events:", error);
     }
   }, [viewMode]);
 
-  // Fetch events when component mounts
   useEffect(() => {
     fetchEvents();
   }, [fetchEvents]);
 
-  // Process events to handle recurrence rules and filter future events based on view mode
   const processEvents = (data) => {
-    console.log("Processing events"); // Debug log
     const now = new Date();
     const endPeriod =
       viewMode === "week"
@@ -61,7 +56,7 @@ function UpcomingEvents() {
             const occurrences = rule.between(now, endPeriod);
             return occurrences.map((date) => ({
               ...event,
-              uniqueKey: `${event._id}-${date.getTime()}`, // Generate unique key
+              uniqueKey: `${event._id}-${date.getTime()}`,
               startDate: date.toISOString(),
               endDate: new Date(
                 new Date(date).getTime() +
@@ -86,75 +81,10 @@ function UpcomingEvents() {
       .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
   };
 
-  // Format date
-  const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
-  // Format time
-  const formatTime = (timeString) => {
-    const options = { hour: "2-digit", minute: "2-digit" };
-    return new Date(timeString).toLocaleTimeString(undefined, options);
-  };
-
-  // Format the recurrence rule for display
-  const formatRecurrenceRule = (rule) => {
-    try {
-      const rrule = RRule.fromString(rule);
-      const freq = RRule.FREQUENCIES[rrule.options.freq];
-      const interval = rrule.options.interval;
-      const days = rrule.options.byweekday
-        ? rrule.options.byweekday.map((day) => RRule.DAYS[day.weekday])
-        : [];
-
-      const dayNames = {
-        MO: "Mondays",
-        TU: "Tuesdays",
-        WE: "Wednesdays",
-        TH: "Thursdays",
-        FR: "Fridays",
-        SA: "Saturdays",
-        SU: "Sundays",
-      };
-
-      const dayList =
-        days.length > 0
-          ? days.map((day) => dayNames[day] || day).join(", ")
-          : "";
-
-      let formattedRule = "";
-      switch (freq) {
-        case "DAILY":
-          formattedRule = `Every ${interval} day(s)`;
-          break;
-        case "WEEKLY":
-          formattedRule = `Every ${interval} week(s)${
-            dayList ? ` on ${dayList}` : ""
-          }`;
-          break;
-        case "MONTHLY":
-          formattedRule = `Every ${interval} month(s)`;
-          break;
-        case "YEARLY":
-          formattedRule = `Every ${interval} year(s)`;
-          break;
-        default:
-          formattedRule = rule;
-      }
-      return formattedRule;
-    } catch (error) {
-      console.error("Error formatting recurrence rule:", rule, error);
-      return rule;
-    }
-  };
-
-  // Handle edit button click
   const handleEdit = (event) => {
-    // Navigate to EditEvent component with event data
     navigate(`/editevent/${event.eventId}`);
   };
-  // Handle edit button click
+
   const handleDelete = async (eventId) => {
     if (window.confirm("Are you sure you want to delete this event?")) {
       try {
@@ -170,7 +100,7 @@ function UpcomingEvents() {
         );
         if (response.ok) {
           alert("Event deleted successfully!");
-          fetchEvents(); // Refresh events after deletion
+          fetchEvents();
         } else {
           alert("Failed to delete event.");
         }
@@ -204,7 +134,9 @@ function UpcomingEvents() {
             <div key={event.uniqueKey} className="event-item">
               <div className="event-header">
                 <h2 className="event-title">{event.title}</h2>
-                <div className="event-date">{formatDate(event.startDate)}</div>
+                <div className="event-date">
+                  {formatDate(event.startDate)} - {formatDate(event.endDate)}
+                </div>
               </div>
               <div className="event-body">
                 <div className="event-time">
@@ -212,7 +144,7 @@ function UpcomingEvents() {
                 </div>
                 {event.recurrenceRule && (
                   <div className="event-recurrence">
-                    Recurs: {formatRecurrenceRule(event.recurrenceRule)}
+                    {generateHumanReadableDescription(event.recurrenceRule)}
                   </div>
                 )}
                 {event.details && (
@@ -227,7 +159,7 @@ function UpcomingEvents() {
                   </button>
                   <button
                     onClick={() => handleDelete(event.eventId)}
-                    className="btn btn-secondary"
+                    className="btn btn-danger"
                   >
                     Delete
                   </button>

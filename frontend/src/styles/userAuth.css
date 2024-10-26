@@ -54,6 +54,23 @@
   margin-top: 1.5rem;
   color: var(--text-secondary);
 }
+.password-input-container {
+  position: relative;
+}
+
+.password-input-container input {
+  padding-right: 30px; /* Adjust padding to make space for the button */
+}
+
+.toggle-password-visibility {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
 
 .btn-link {
   background: none;

@@ -47,7 +47,7 @@ function ViewAllEvents() {
       if (response.ok) {
         const data = await response.json();
         const now = new Date();
-        const endPeriod = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
+        const endPeriod = new Date(now.getTime() + 730 * 24 * 60 * 60 * 1000);
         const processedEvents = data.flatMap((event) => {
           const eventColor = generateRandomColor();
           if (event.recurrenceRule && event.recurrenceRule !== "null") {

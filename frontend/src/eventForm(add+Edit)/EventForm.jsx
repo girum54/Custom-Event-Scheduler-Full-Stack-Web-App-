@@ -98,6 +98,7 @@ const EventForm = () => {
           endDateTime: formatDateTime(data.endDate),
         }));
         const parsedData = parseRRule(data.recurrenceRule);
+        console.log("Parsed Data:", parsedData);
         setEventData((prevData) => ({
           ...prevData,
           ...parsedData,
@@ -125,7 +126,6 @@ const EventForm = () => {
       newErrors.startDateTime = "Start date and time is required";
     if (!eventData.endDateTime)
       newErrors.endDateTime = "End date and time is required";
-
     if (eventData.startDateTime && eventData.endDateTime) {
       if (
         new Date(eventData.endDateTime) <= new Date(eventData.startDateTime)
@@ -134,7 +134,6 @@ const EventForm = () => {
           "End date and time must be after start date and time";
       }
     }
-
     if (
       eventData.recurrenceType === "specific_interval" &&
       eventData.specificInterval.number < 1
@@ -580,7 +579,7 @@ const EventForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="form-container">
+    <form onSubmit={handleSubmit} className="form-container" autoComplete="off">
       <h2>{isEditMode ? "Edit Event" : "Create New Event"}</h2>
 
       <div className="form-group">
@@ -608,7 +607,9 @@ const EventForm = () => {
       </div>
 
       <div className="form-group">
-        <label className="form-label">Start Date and Time:</label>
+        <label className="form-label">
+          Start Date and Time of Event's First Occurence:
+        </label>
         <input
           type="datetime-local"
           name="startDateTime"
@@ -623,7 +624,9 @@ const EventForm = () => {
       </div>
 
       <div className="form-group">
-        <label className="form-label">End Date and Time:</label>
+        <label className="form-label">
+          End Date and Time of Event's First Occurence:
+        </label>
         <input
           type="datetime-local"
           name="endDateTime"

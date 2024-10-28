@@ -8,6 +8,8 @@ function UserAuth({ setIsLoggedIn }) {
   const [username, setUsername] = useState("");
   //state to store the password input
   const [password, setPassword] = useState("");
+  //new state to toggle viewing password
+  const [showPassword, setShowPassword] = useState(false);
 
   //Function to handle form submission
   const handleSubmit = async (e) => {
@@ -49,7 +51,7 @@ function UserAuth({ setIsLoggedIn }) {
   return (
     <div className="form-container">
       <h2>{isLogin ? "Login" : "Register"}</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} autoComplete="off">
         <div className="form-group">
           <label htmlFor="username" className="form-label">
             Username
@@ -67,15 +69,25 @@ function UserAuth({ setIsLoggedIn }) {
           <label htmlFor="password" className="form-label">
             Password
           </label>
-          <input
-            type="password"
-            className="form-control"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="password-input-container">
+            <input
+              type={showPassword ? "text" : "password"}
+              className="form-control"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              type="button"
+              className="toggle-password-visibility"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? "👁️‍🗨️" : "👁️"}
+            </button>
+          </div>
         </div>
+
         <button type="submit" className="btn-primary">
           {isLogin ? "Login" : "Register"}
         </button>

@@ -56,6 +56,7 @@ export const generateRRule = (eventData) => {
         case "yearly":
           options.freq = RRule.YEARLY;
           break;
+        default:
       }
       break;
     case "specific_dates":
@@ -78,6 +79,7 @@ export const generateRRule = (eventData) => {
         case "yearly":
           options.freq = RRule.YEARLY;
           break;
+        default:
       }
       options.interval = specificInterval.number;
       break;
@@ -107,6 +109,7 @@ export const generateRRule = (eventData) => {
           RRule[relativeYearlyDate.day.toUpperCase().slice(0, 2)];
       }
       break;
+    default:
   }
   console.log(new RRule(options).toString()); //debug log
   return new RRule(options).toString();
@@ -123,6 +126,7 @@ export const parseRRule = (rruleString) => {
 
   const getWeekString = (bysetpos) => {
     if (bysetpos === -1) return "last";
+    console.log("bysetpos:", bysetpos);
     return (
       ["first", "second", "third", "fourth", "fifth"][bysetpos - 1] || "first"
     );
@@ -170,7 +174,7 @@ export const parseRRule = (rruleString) => {
         parsedData = {
           recurrenceType: "relative_date",
           relativeDate: {
-            week: getWeekString(options.bysetpos),
+            week: getWeekString(options.bysetpos[0]),
             day: getDayString(options.byweekday),
           },
         };
@@ -192,7 +196,7 @@ export const parseRRule = (rruleString) => {
           recurrenceType: "relative_yearly_date",
           relativeYearlyDate: {
             month: options.bymonth[0],
-            week: getWeekString(options.bysetpos),
+            week: getWeekString(options.bysetpos[0]),
             day: getDayString(options.byweekday),
           },
         };
@@ -208,6 +212,7 @@ export const parseRRule = (rruleString) => {
         };
       }
       break;
+    default:
   }
 
   if (options.interval && options.interval > 1) {

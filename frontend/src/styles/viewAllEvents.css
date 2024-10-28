@@ -110,25 +110,25 @@
 }
 
 /* Define different colors for events */
-.fc-event:nth-of-type(5n + 1) .fc-event-main {
-  background-color: #ff6b6b !important;
-}
+/* .fc-event:nth-of-type(5n + 1) .fc-event-main {
+  background-color: #ff6b6b !important; */
+/* } */
 
-.fc-event:nth-of-type(5n + 2) .fc-event-main {
+/* .fc-event:nth-of-type(5n + 2) .fc-event-main {
   background-color: #4ecdc4 !important;
-}
+} */
 
-.fc-event:nth-of-type(5n + 3) .fc-event-main {
+/* .fc-event:nth-of-type(5n + 3) .fc-event-main {
   background-color: #45b7d1 !important;
-}
+} */
 
-.fc-event:nth-of-type(5n + 4) .fc-event-main {
+/* .fc-event:nth-of-type(5n + 4) .fc-event-main {
   background-color: #f7b731 !important;
 }
 
 .fc-event:nth-of-type(5n + 5) .fc-event-main {
   background-color: #a55eea !important;
-}
+} */
 
 /* Media queries for mobile responsiveness */
 @media (max-width: 600px) {

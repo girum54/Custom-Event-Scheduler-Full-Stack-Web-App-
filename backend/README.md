@@ -12,26 +12,31 @@ API and Backend Setup
 
 ## Installation
 
-1. Clone the repository:
+Clone the repository:
+
    ```bash
    git clone https://github.com/girum54/Custom-Event-Scheduler-Full-Stack-Web-App-.git
    cd Custom-Event-Scheduler-Full-Stack-Web-App-/backend
    ```
 
 ## Install dependencies:
+
    ```bash
     npm install
    ```
 
 Set up environment variables: Create a .env file in the root directory and add the necessary environment variables. For example:
+
 ```bash 
 PORT=5001
 DATABASE_URL=mongodb://localhost:27017/event-scheduler
 JWT_SECRET=the_secret
 ```
+
 ## Usage
 
 Start the server: with nodemon
+
 ```bash
    npm run start
 ```
@@ -44,10 +49,10 @@ The server will be running on http://localhost:5001.
   POST "http://localhost:5001/api/users/register"
   Registers a new user.
 # Events
-  -GET http://localhost:5001/api/events
+  - GET http://localhost:5001/api/events
   Retrieves a list of events.
   Headers: Authorization: Bearer <token>
-  -POST http://localhost:5001/api/events
+  - POST http://localhost:5001/api/events
   Creates a new event.
   Headers: Authorization: Bearer <token>
   Request body:
@@ -61,7 +66,7 @@ The server will be running on http://localhost:5001.
   "recurrenceType": "relative-date"
   }
 
-  -PUT http://localhost:5001/api/events/eventId
+  - PUT http://localhost:5001/api/events/eventId
   Updates an existing event.
   Headers: Authorization: Bearer <token>
   Request body:
@@ -75,18 +80,18 @@ The server will be running on http://localhost:5001.
   "recurrenceType": "relative-date"
   }
 
-  -DELETE http://localhost:5001/api/events/eventId
+  - DELETE http://localhost:5001/api/events/eventId
   Deletes an event.
   Headers: Authorization: Bearer <token>
 
 ## Configuration
 
-Make sure you define these details in the code, to suit your
-
--PORT: The port number on which the server will run.
--DATABASE_URL: The URL of the MongoDB database.
--JWT_SECRET: The secret key for signing JWT tokens.
-
+Make sure you define these details in the code .env file, to suit yours
+   ```bash
+   PORT: The port number on which the server will run.
+   DATABASE_URL: The URL of the MongoDB database.
+   JWT_SECRET: The secret key for signing JWT tokens.
+   ```
 ## Contributing
 
 Fork the repository.
